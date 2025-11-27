@@ -206,26 +206,34 @@
                 const resumeData = data.resume_data || {};
                 
                 // Skills
-                if (resumeData.skills && Array.isArray(resumeData.skills)) {
+                if (resumeData && resumeData.skills && Array.isArray(resumeData.skills) && resumeData.skills.length > 0) {
                     document.getElementById('skills').innerHTML = resumeData.skills
                         .map(skill => `<span class="skill-tag">${skill}</span>`)
                         .join('');
                 } else {
-                    document.getElementById('skills').textContent = 'No skills data';
+                    // Fallback: Try to extract from experience or show generic message
+                    document.getElementById('skills').innerHTML = '<span class="skill-tag" style="background:#ccc">See Experience</span>';
                 }
 
                 // Education
-                if (resumeData.education && Array.isArray(resumeData.education)) {
+                if (resumeData && resumeData.education && Array.isArray(resumeData.education) && resumeData.education.length > 0) {
                     document.getElementById('education').innerHTML = resumeData.education
                         .map(edu => `<div class="info-item"><div class="info-value">${edu}</div></div>`)
                         .join('');
                 } else {
-                    document.getElementById('education').textContent = 'No education data';
+                     document.getElementById('education').innerHTML = '<div class="info-item"><div class="info-value">Not specified</div></div>';
                 }
 
                 // Summary
-                document.getElementById('summary').textContent = resumeData.summary || 
-                    data.experience || 'No summary available';
+                const summaryText = resumeData.summary || data.experience || 'No summary available';
+                document.getElementById('summary').textContent = summaryText;
+                
+                // Experience Section (Explicit)
+                if (data.experience && data.experience !== summaryText) {
+                     document.getElementById('experience').textContent = data.experience;
+                } else {
+                     document.getElementById('experience').textContent = summaryText;
+                }
 
             } catch (err) {
                 console.error('Error loading data:', err);

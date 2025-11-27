@@ -33,6 +33,20 @@ Before the app works, you must run this SQL in your Supabase SQL Editor:
 -- Make user_id nullable so anonymous applicants can submit
 ALTER TABLE public.applicants 
 ALTER COLUMN user_id DROP NOT NULL;
+
+-- Allow anonymous inserts (REQUIRED)
+CREATE POLICY "Allow anonymous inserts"
+ON public.applicants
+FOR INSERT
+WITH CHECK (true);
+
+-- Allow anonymous selects (REQUIRED for /applicant-resume page)
+CREATE POLICY "Allow anonymous selects"
+ON public.applicants
+FOR SELECT
+USING (true);
+
+-- OR disable RLS on the table
 ```
 
 ## Local Development
