@@ -84,7 +84,8 @@
 </head>
 <body>
   <div id="video-container">
-    <video id="video" autoplay playsinline muted></video>
+    <!-- playsinline is for iOS Safari; webkit-playsinline for legacy support -->
+    <video id="video" autoplay playsinline webkit-playsinline muted></video>
     <div class="guide-frame"></div>
     <div class="overlay">
       <div class="status-dot"></div>
