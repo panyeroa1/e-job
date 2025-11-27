@@ -84,6 +84,12 @@ const ApplicantForm: React.FC<ApplicantFormProps> = ({ onSubmit, onBack }) => {
       alert('Please fill in all required fields (Name, Email, Role)');
       return;
     }
+
+    // Enforce seriousness: Require Experience and Skills
+    if (!formData.experience.trim() || !formData.skills.trim()) {
+      alert('To ensure a quality match, please complete the Experience and Skills sections manually.');
+      return;
+    }
     
     // Construct merged resume data
     const manualResumeData = {
@@ -304,9 +310,12 @@ const ApplicantForm: React.FC<ApplicantFormProps> = ({ onSubmit, onBack }) => {
           </div>
 
           <div className="space-y-2">
-            <label htmlFor="experience" className="block text-sm font-medium text-gray-300">Additional Experience Summary</label>
+            <label htmlFor="experience" className="block text-sm font-medium text-gray-300">
+              Professional Experience <span className="text-red-500">*</span>
+            </label>
             <textarea
               id="experience"
+              required
               rows={4}
               className="w-full px-4 py-3.5 bg-gray-800/50 border border-gray-700 rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 text-white placeholder-gray-500 outline-none transition-all resize-none"
               placeholder="Briefly describe your relevant experience..."
@@ -316,10 +325,13 @@ const ApplicantForm: React.FC<ApplicantFormProps> = ({ onSubmit, onBack }) => {
           </div>
 
           <div className="space-y-2">
-            <label htmlFor="skills" className="block text-sm font-medium text-gray-300">Skills (Comma separated)</label>
+            <label htmlFor="skills" className="block text-sm font-medium text-gray-300">
+              Skills (Comma separated) <span className="text-red-500">*</span>
+            </label>
             <input
               type="text"
               id="skills"
+              required
               className="w-full px-4 py-3.5 bg-gray-800/50 border border-gray-700 rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 text-white placeholder-gray-500 outline-none transition-all"
               placeholder="e.g. React, TypeScript, Node.js, Design"
               value={formData.skills}
