@@ -13,6 +13,7 @@
     "jsx": "react-jsx",
     "strict": true,
     "noUnusedLocals": false,
+    "forceConsistentCasingInFileNames": true,
     "noUnusedParameters": false,
     "noFallthroughCasesInSwitch": true
   },

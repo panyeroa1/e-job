@@ -54,7 +54,7 @@ const ApplicantResume: React.FC<ApplicantResumeProps> = ({ data, onBack }) => {
                                 <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full mt-1.5 shrink-0"></span>
                                 <span>{edu}</span>
                             </li>
-                        )) || <span className="text-gray-500 italic">No education listed</span>}
+                        )) || <li className="text-gray-500 italic">No education listed</li>}
                     </ul>
                 </div>
             </div>

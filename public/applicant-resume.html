@@ -260,7 +260,8 @@
                 document.getElementById('timestamp').textContent = `Last updated: ${date.toLocaleString()}`;
 
                 // Parse resume_data (JSONB)
-                const resumeData = data.resume_data || {};
+                // Parse resume_data (JSONB) - already parsed above
+                // const resumeData = data.resume_data || {};
                 
                 // Skills
                 if (resumeData && resumeData.skills && Array.isArray(resumeData.skills) && resumeData.skills.length > 0) {

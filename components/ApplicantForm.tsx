@@ -250,6 +250,7 @@ const ApplicantForm: React.FC<ApplicantFormProps> = ({ onSubmit, onBack }) => {
                     accept=".pdf,.doc,.docx,.txt,.md,.png,.jpg,.jpeg"
                     className="hidden"
                     disabled={isExtracting}
+                    aria-label="Upload Resume"
                 />
                 <div className="w-12 h-12 bg-gray-800 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
                     {isExtracting ? (
