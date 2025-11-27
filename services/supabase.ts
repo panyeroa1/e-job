@@ -12,18 +12,23 @@ export const supabase = createClient(supabaseUrl || '', supabaseAnonKey || '');
 
 export async function saveApplicant(data: ApplicantData): Promise<string | null> {
   try {
+    // Using a placeholder user_id since we don't have authentication
+    // You should run: ALTER TABLE public.applicants ALTER COLUMN user_id DROP NOT NULL;
+    const PLACEHOLDER_USER_ID = '00000000-0000-0000-0000-000000000000';
+    
     const { error } = await supabase
       .from('applicants')
       .insert([
         {
           id: data.id,
+          user_id: PLACEHOLDER_USER_ID,
           name: data.name,
           email: data.email,
           role: data.role,
           experience: data.experience,
-          resume_text: data.resumeText,
-          extracted_data: data.extractedResume,
-          created_at: new Date(data.timestamp).toISOString()
+          resume_data: data.extractedResume,
+          photo_url: null,
+          status: 'applied'
         }
       ]);
 
@@ -57,8 +62,8 @@ export async function getApplicant(id: string): Promise<ApplicantData | null> {
       email: data.email,
       role: data.role,
       experience: data.experience,
-      resumeText: data.resume_text,
-      extractedResume: data.extracted_data,
+      resumeText: '', // resume_text doesn't exist in your schema
+      extractedResume: data.resume_data, // Changed from extracted_data
       timestamp: new Date(data.created_at).getTime()
     };
   } catch (err) {
