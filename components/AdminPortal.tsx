@@ -498,18 +498,22 @@ const AdminPortal: React.FC<AdminPortalProps> = ({ onLogout }) => {
                                     <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Location</label>
                                     <input 
                                         type="text" 
+                                        placeholder="e.g. Remote, New York, London"
                                         className="w-full bg-gray-950 border border-gray-700 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-emerald-500/50 outline-none transition-all placeholder-gray-600"
                                         value={newJob.location}
                                         onChange={e => setNewJob({...newJob, location: e.target.value})}
+                                        aria-label="Job Location"
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Type</label>
+                                    <label htmlFor="job-type" className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Type</label>
                                     <div className="relative">
                                         <select 
+                                            id="job-type"
                                             className="w-full bg-gray-950 border border-gray-700 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-emerald-500/50 outline-none appearance-none"
                                             value={newJob.type}
                                             onChange={e => setNewJob({...newJob, type: e.target.value as any})}
+                                            aria-label="Job Type"
                                         >
                                             <option>Full-time</option>
                                             <option>Part-time</option>
@@ -522,24 +526,28 @@ const AdminPortal: React.FC<AdminPortalProps> = ({ onLogout }) => {
                                     </div>
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Salary Range</label>
+                                    <label htmlFor="job-salary-range" className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Salary Range</label>
                                     <input 
                                         type="text" 
+                                        id="job-salary-range"
                                         className="w-full bg-gray-950 border border-gray-700 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-emerald-500/50 outline-none transition-all placeholder-gray-600"
                                         placeholder="e.g. €60k - €80k"
                                         value={newJob.salaryRange}
                                         onChange={e => setNewJob({...newJob, salaryRange: e.target.value})}
+                                        aria-label="Job Salary Range"
                                     />
                                 </div>
 
                                 <div className="md:col-span-2">
-                                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Description</label>
+                                    <label htmlFor="job-description" className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Description</label>
                                     <textarea 
                                         rows={8}
+                                        id="job-description"
                                         className="w-full bg-gray-950 border border-gray-700 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-emerald-500/50 outline-none resize-none transition-all placeholder-gray-600 leading-relaxed"
                                         value={newJob.description}
                                         onChange={e => setNewJob({...newJob, description: e.target.value})}
                                         placeholder="Enter full job description..."
+                                        aria-label="Job Description"
                                     />
                                 </div>
 
@@ -554,6 +562,7 @@ const AdminPortal: React.FC<AdminPortalProps> = ({ onLogout }) => {
                                                     onClick={() => handleRemoveRequirement(index)} 
                                                     className="text-gray-600 hover:text-red-400 p-1 opacity-0 group-hover:opacity-100 transition-all"
                                                     title="Remove requirement"
+                                                    aria-label={`Remove requirement: ${req}`}
                                                 >
                                                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
                                                 </button>
@@ -567,6 +576,7 @@ const AdminPortal: React.FC<AdminPortalProps> = ({ onLogout }) => {
                                                 value={reqInput}
                                                 onChange={(e) => setReqInput(e.target.value)}
                                                 onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddRequirement())}
+                                                aria-label="Add new requirement"
                                             />
                                             <button 
                                                 onClick={handleAddRequirement}

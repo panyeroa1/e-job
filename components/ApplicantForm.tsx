@@ -281,6 +281,7 @@ const ApplicantForm: React.FC<ApplicantFormProps> = ({ onSubmit, onBack }) => {
                     type="button"
                     onClick={() => setPhotoBase64(null)}
                     className="absolute -top-2 -right-2 w-8 h-8 bg-red-500 rounded-full flex items-center justify-center hover:bg-red-600 transition-colors"
+                    aria-label="Remove photo"
                   >
                     <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
                   </button>
