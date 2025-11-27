@@ -117,6 +117,11 @@
         <div id="loading" class="loading">Loading applicant data...</div>
         <div id="error" class="error" style="display: none;">No applicant data found.</div>
         <div id="content" style="display: none;">
+            <!-- Photo Display -->
+            <div style="display: flex; justify-content: center; margin-bottom: 30px;">
+                <img id="photo" src="" alt="Profile" style="width: 150px; height: 150px; border-radius: 50%; object-fit: cover; border: 4px solid #667eea; display: none;" />
+            </div>
+            
             <div class="header">
                 <h1 id="name">-</h1>
                 <div class="role" id="role">-</div>
@@ -190,6 +195,13 @@
                 // Hide loading, show content
                 document.getElementById('loading').style.display = 'none';
                 document.getElementById('content').style.display = 'block';
+
+                // Display photo if available
+                if (data.photo_url) {
+                    const photoEl = document.getElementById('photo');
+                    photoEl.src = data.photo_url;
+                    photoEl.style.display = 'block';
+                }
 
                 // Populate basic info
                 document.getElementById('name').textContent = data.name || 'N/A';

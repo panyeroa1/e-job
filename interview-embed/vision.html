@@ -88,15 +88,26 @@
     <div class="guide-frame"></div>
     <div class="overlay">
       <div class="status-dot"></div>
-      <span>Vision Agent Active</span>
+      <span id="applicantName">Applicant</span>
     </div>
     <div class="message">Align your face within the frame</div>
   </div>
 
   <script>
     const video = document.getElementById('video');
+    const applicantNameEl = document.getElementById('applicantName');
     const GEMINI_API_KEY = "AIzaSyAql5az9ms1AEQr_TMslKK9UQXtIZtNxwc";
     const GEMINI_MODEL_ID = "gemini-flash-latest";
+
+    // Load applicant name if available
+    async function loadApplicantName() {
+      const applicantId = localStorage.getItem('currentApplicantId');
+      if (applicantId) {
+        // You can fetch full data from Supabase or just use stored data
+        applicantNameEl.textContent = 'Interview in Progress';
+      }
+    }
+    loadApplicantName();
 
     const VISION_SYSTEM_PROMPT = `
 You are a real-time vision agent assisting Beatrice, an HR interviewer.

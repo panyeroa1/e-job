@@ -24,7 +24,7 @@ export async function saveApplicant(data: ApplicantData): Promise<string | null>
           role: data.role,
           experience: data.experience,
           resume_data: data.extractedResume,
-          photo_url: null,
+          photo_url: data.photoBase64 ? `data:image/jpeg;base64,${data.photoBase64}` : null,
           status: 'applied'
         }
       ]);
@@ -63,8 +63,9 @@ export async function getApplicant(id: string): Promise<ApplicantData | null> {
       email: data.email,
       role: data.role,
       experience: data.experience,
-      resumeText: '', // resume_text doesn't exist in your schema
-      extractedResume: data.resume_data, // Changed from extracted_data
+      resumeText: '',
+      extractedResume: data.resume_data,
+      photoBase64: data.photo_url?.replace('data:image/jpeg;base64,', '') || undefined,
       timestamp: new Date(data.created_at).getTime()
     };
   } catch (err) {

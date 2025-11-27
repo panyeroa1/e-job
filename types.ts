@@ -20,6 +20,7 @@ export interface ApplicantData {
   experience: string;
   resumeText?: string; // Added Resume Text
   extractedResume?: any; // Added Extracted Resume Data
+  photoBase64?: string; // Base64 encoded profile photo
   timestamp: number;
 }
 
