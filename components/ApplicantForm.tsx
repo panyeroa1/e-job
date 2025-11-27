@@ -14,8 +14,14 @@ const ApplicantForm: React.FC<ApplicantFormProps> = ({ onSubmit, onBack }) => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
+    phone: '',
+    location: '',
+    linkedin: '',
+    website: '',
     role: '',
     experience: '',
+    skills: '', // Comma separated
+    education: '', // New line separated
     resumeText: ''
   });
   const [fileName, setFileName] = useState<string | null>(null);
@@ -42,7 +48,9 @@ const ApplicantForm: React.FC<ApplicantFormProps> = ({ onSubmit, onBack }) => {
             email: data.email || prev.email,
             role: data.role || prev.role,
             experience: data.summary || prev.experience,
-            resumeText: JSON.stringify(data, null, 2) // Store full JSON as text for now
+            skills: data.skills?.join(', ') || prev.skills,
+            education: data.education?.join('\n') || prev.education,
+            resumeText: JSON.stringify(data, null, 2)
         }));
       } catch (error) {
         console.error("Extraction failed", error);
@@ -77,22 +85,35 @@ const ApplicantForm: React.FC<ApplicantFormProps> = ({ onSubmit, onBack }) => {
       return;
     }
     
-    // Require resume upload
-    if (!fileName) {
-      alert('Please upload your resume before submitting');
-      return;
-    }
+    // Construct merged resume data
+    const manualResumeData = {
+        ...extractedData,
+        name: formData.name,
+        email: formData.email,
+        role: formData.role,
+        summary: formData.experience,
+        skills: formData.skills.split(',').map(s => s.trim()).filter(Boolean),
+        education: formData.education.split('\n').map(e => e.trim()).filter(Boolean),
+        phone: formData.phone,
+        location: formData.location,
+        linkedin: formData.linkedin,
+        website: formData.website
+    };
     
     const applicantId = crypto.randomUUID();
     const newApplicant: ApplicantData = {
         id: applicantId,
         name: formData.name.trim(),
         email: formData.email.trim(),
+        phone: formData.phone.trim(),
+        location: formData.location.trim(),
+        linkedin: formData.linkedin.trim(),
+        website: formData.website.trim(),
         role: formData.role.trim(),
         experience: formData.experience.trim(),
         resumeText: formData.resumeText.trim(),
         timestamp: Date.now(),
-        extractedResume: extractedData,
+        extractedResume: manualResumeData,
         photoBase64: photoBase64 || undefined
     };
 
@@ -147,6 +168,42 @@ const ApplicantForm: React.FC<ApplicantFormProps> = ({ onSubmit, onBack }) => {
                   placeholder="e.g. jane@company.com"
                   value={formData.email}
                   onChange={(e) => setFormData({...formData, email: e.target.value})}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label htmlFor="phone" className="block text-sm font-medium text-gray-300">Phone Number</label>
+                <input
+                  type="tel"
+                  id="phone"
+                  className="w-full px-4 py-3.5 bg-gray-800/50 border border-gray-700 rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 text-white placeholder-gray-500 outline-none transition-all"
+                  placeholder="e.g. +1 (555) 000-0000"
+                  value={formData.phone}
+                  onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label htmlFor="location" className="block text-sm font-medium text-gray-300">Location</label>
+                <input
+                  type="text"
+                  id="location"
+                  className="w-full px-4 py-3.5 bg-gray-800/50 border border-gray-700 rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 text-white placeholder-gray-500 outline-none transition-all"
+                  placeholder="e.g. New York, NY"
+                  value={formData.location}
+                  onChange={(e) => setFormData({...formData, location: e.target.value})}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label htmlFor="linkedin" className="block text-sm font-medium text-gray-300">LinkedIn URL</label>
+                <input
+                  type="url"
+                  id="linkedin"
+                  className="w-full px-4 py-3.5 bg-gray-800/50 border border-gray-700 rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 text-white placeholder-gray-500 outline-none transition-all"
+                  placeholder="linkedin.com/in/username"
+                  value={formData.linkedin}
+                  onChange={(e) => setFormData({...formData, linkedin: e.target.value})}
                 />
               </div>
           </div>
@@ -250,11 +307,35 @@ const ApplicantForm: React.FC<ApplicantFormProps> = ({ onSubmit, onBack }) => {
             <label htmlFor="experience" className="block text-sm font-medium text-gray-300">Additional Experience Summary</label>
             <textarea
               id="experience"
-              rows={3}
+              rows={4}
               className="w-full px-4 py-3.5 bg-gray-800/50 border border-gray-700 rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 text-white placeholder-gray-500 outline-none transition-all resize-none"
               placeholder="Briefly describe your relevant experience..."
               value={formData.experience}
               onChange={(e) => setFormData({...formData, experience: e.target.value})}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label htmlFor="skills" className="block text-sm font-medium text-gray-300">Skills (Comma separated)</label>
+            <input
+              type="text"
+              id="skills"
+              className="w-full px-4 py-3.5 bg-gray-800/50 border border-gray-700 rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 text-white placeholder-gray-500 outline-none transition-all"
+              placeholder="e.g. React, TypeScript, Node.js, Design"
+              value={formData.skills}
+              onChange={(e) => setFormData({...formData, skills: e.target.value})}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label htmlFor="education" className="block text-sm font-medium text-gray-300">Education (One per line)</label>
+            <textarea
+              id="education"
+              rows={3}
+              className="w-full px-4 py-3.5 bg-gray-800/50 border border-gray-700 rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 text-white placeholder-gray-500 outline-none transition-all resize-none"
+              placeholder="e.g. BS Computer Science - University of Tech"
+              value={formData.education}
+              onChange={(e) => setFormData({...formData, education: e.target.value})}
             />
           </div>
 

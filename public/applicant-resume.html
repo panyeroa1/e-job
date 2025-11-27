@@ -135,6 +135,18 @@
                         <div class="info-value" id="email">-</div>
                     </div>
                     <div class="info-item">
+                        <div class="info-label">Phone</div>
+                        <div class="info-value" id="phone">-</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Location</div>
+                        <div class="info-value" id="location">-</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">LinkedIn</div>
+                        <div class="info-value"><a id="linkedin" href="#" target="_blank" style="color: #667eea; text-decoration: none;">-</a></div>
+                    </div>
+                    <div class="info-item">
                         <div class="info-label">Applied</div>
                         <div class="info-value" id="applied">-</div>
                     </div>
@@ -207,6 +219,22 @@
                 document.getElementById('name').textContent = data.name || 'N/A';
                 document.getElementById('role').textContent = data.role || 'N/A';
                 document.getElementById('email').textContent = data.email || 'N/A';
+                
+                // Parse resume_data (JSONB)
+                const resumeData = data.resume_data || {};
+
+                document.getElementById('phone').textContent = resumeData.phone || 'N/A';
+                document.getElementById('location').textContent = resumeData.location || 'N/A';
+                
+                const linkedinEl = document.getElementById('linkedin');
+                if (resumeData.linkedin) {
+                    linkedinEl.textContent = 'View Profile';
+                    linkedinEl.href = resumeData.linkedin.startsWith('http') ? resumeData.linkedin : `https://${resumeData.linkedin}`;
+                } else {
+                    linkedinEl.textContent = 'N/A';
+                    linkedinEl.removeAttribute('href');
+                }
+
                 document.getElementById('experience').textContent = data.experience || 'No experience data';
                 
                 // Format date

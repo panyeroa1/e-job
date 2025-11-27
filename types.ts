@@ -16,6 +16,10 @@ export interface ApplicantData {
   id: string; // Added ID for tracking
   name: string;
   email: string;
+  phone?: string;
+  location?: string;
+  linkedin?: string;
+  website?: string;
   role: string;
   experience: string;
   resumeText?: string; // Added Resume Text
