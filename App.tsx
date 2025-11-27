@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import InterviewSession from './components/InterviewSession';
 import ApplicantForm from './components/ApplicantForm';
 import LandingPage from './components/LandingPage';
@@ -8,16 +8,40 @@ import AdminPortal from './components/AdminPortal';
 import ResumeReview from './components/ResumeReview';
 import ApplicantResume from './components/ApplicantResume';
 import { ApplicantData, AppStep } from './types';
+import { getApplicant } from './services/supabase';
 
 function App() {
   const [step, setStep] = useState<AppStep>('landing');
   const [applicantData, setApplicantData] = useState<ApplicantData | null>(null);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const applicantId = params.get('applicant_id');
+    const stepParam = params.get('step');
+
+    if (applicantId) {
+      getApplicant(applicantId).then(data => {
+        if (data) {
+          setApplicantData(data);
+          if (stepParam === 'applicant-resume') {
+            setStep('applicant-resume');
+          }
+        }
+      });
+    }
+  }, []);
 
   const handleFormSubmit = (data: ApplicantData) => {
     setApplicantData(data);
     // Skip ResumeReview, go straight to interview or confirmation
     // User requested: "do not display that in the front end anymode"
     // So we go directly to interview, but we keep the data for the /applicant-resume page
+    // Update URL without reloading to allow bookmarking/sharing if needed
+    if (data.id) {
+        const newUrl = new URL(window.location.href);
+        newUrl.searchParams.set('applicant_id', data.id);
+        window.history.pushState({}, '', newUrl);
+    }
     setStep('interview'); 
   };
 

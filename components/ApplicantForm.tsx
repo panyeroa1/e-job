@@ -2,6 +2,7 @@
 import React, { useState, useRef } from 'react';
 import { ApplicantData } from '../types';
 import { extractResumeData } from '../services/resumeExtractor';
+import { saveApplicant } from '../services/supabase';
 
 interface ApplicantFormProps {
   onSubmit: (data: ApplicantData) => void;
@@ -49,15 +50,16 @@ const ApplicantForm: React.FC<ApplicantFormProps> = ({ onSubmit, onBack }) => {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (
         formData.name.trim() && 
         formData.role.trim() && 
         formData.email.trim()
     ) {
-      onSubmit({
-          id: crypto.randomUUID(),
+      const applicantId = crypto.randomUUID();
+      const newApplicant: ApplicantData = {
+          id: applicantId,
           name: formData.name.trim(),
           email: formData.email.trim(),
           role: formData.role.trim(),
@@ -65,7 +67,13 @@ const ApplicantForm: React.FC<ApplicantFormProps> = ({ onSubmit, onBack }) => {
           resumeText: formData.resumeText.trim(),
           timestamp: Date.now(),
           extractedResume: extractedData
-      });
+      };
+
+      // Save to Supabase
+      await saveApplicant(newApplicant);
+      
+      // Proceed even if save fails (graceful degradation or local state only)
+      onSubmit(newApplicant);
     }
   };
 

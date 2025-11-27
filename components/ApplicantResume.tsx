@@ -7,6 +7,7 @@ interface ApplicantResumeProps {
 }
 
 const ApplicantResume: React.FC<ApplicantResumeProps> = ({ data, onBack }) => {
+  if (!data) return <div className="text-white p-8">Loading or no data found...</div>;
   const resume = data.extractedResume || {};
 
   return (
