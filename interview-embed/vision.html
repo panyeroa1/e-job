@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vision Agent Capture</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #000;
+      color: #fff;
+      font-family: system-ui, sans-serif;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    #video-container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transform: scaleX(-1); /* Mirror effect */
+    }
+
+    .overlay {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: rgba(0, 0, 0, 0.6);
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      background: #00e0b8;
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.5; }
+      100% { opacity: 1; }
+    }
+
+    .guide-frame {
+      position: absolute;
+      width: 280px;
+      height: 380px;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      border-radius: 160px; /* Oval shape for face */
+      pointer-events: none;
+      box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5); /* Dim outside */
+    }
+
+    .message {
+      position: absolute;
+      bottom: 40px;
+      text-align: center;
+      width: 100%;
+      font-size: 14px;
+      opacity: 0.8;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+    }
+  </style>
+</head>
+<body>
+  <div id="video-container">
+    <video id="video" autoplay playsinline muted></video>
+    <div class="guide-frame"></div>
+    <div class="overlay">
+      <div class="status-dot"></div>
+      <span>Vision Agent Active</span>
+    </div>
+    <div class="message">Align your face within the frame</div>
+  </div>
+
+  <script>
+    const video = document.getElementById('video');
+    const GEMINI_API_KEY = "AIzaSyAql5az9ms1AEQr_TMslKK9UQXtIZtNxwc";
+    const GEMINI_MODEL_ID = "gemini-flash-latest";
+
+    const VISION_SYSTEM_PROMPT = `
+You are a real-time vision agent assisting Beatrice, an HR interviewer.
+Your job is to look at the applicant and describe:
+- Clothing style/formality
+- Posture/Engagement
+- Environment
+Strictly neutral and professional. No personal attributes.
+If unclear, output: NOTHING
+`;
+
+    async function startCamera() {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } },
+          audio: false
+        });
+        video.srcObject = stream;
+        
+        video.onloadedmetadata = () => {
+          // Start analysis loop
+          analyzeFrame();
+        };
+      } catch (err) {
+        console.error("Camera error:", err);
+        alert("Camera access required for vision analysis");
+      }
+    }
+
+    function captureFrame() {
+      const canvas = document.createElement('canvas');
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(video, 0, 0);
+      return canvas.toDataURL('image/jpeg').split(',')[1];
+    }
+
+    async function analyzeFrame() {
+      const base64 = captureFrame();
+      if (!base64) {
+        setTimeout(analyzeFrame, 1000);
+        return;
+      }
+
+      try {
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL_ID}:generateContent?key=${GEMINI_API_KEY}`;
+        
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{
+              role: "user",
+              parts: [
+                { text: "Describe the person and environment briefly." },
+                { inlineData: { mimeType: "image/jpeg", data: base64 } }
+              ]
+            }],
+            systemInstruction: {
+              parts: [{ text: VISION_SYSTEM_PROMPT }]
+            }
+          })
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+          
+          if (text) {
+            console.log("Vision:", text);
+            localStorage.setItem("visionText", text);
+            localStorage.setItem("visionTimestamp", Date.now().toString());
+          }
+        }
+      } catch (err) {
+        console.error("Analysis error:", err);
+      }
+
+      // Loop every 5 seconds
+      setTimeout(analyzeFrame, 5000);
+    }
+
+    startCamera();
+  </script>
+</body>
+</html>

@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Eburon – Beatrice + Vision Agent</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      background: #000;
+      overflow: hidden;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
+        "Segoe UI", sans-serif;
+    }
+
+    body {
+      position: fixed;
+      inset: 0;
+    }
+
+    .app-root {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      background: #000;
+      display: flex;
+      align-items: stretch;
+      justify-content: center;
+    }
+
+    /* Fullscreen D-ID avatar target */
+    #did-container {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* UI overlay layer */
+    .ui-layer {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      align-items: center;
+      padding: 16px 14px 24px;
+      z-index: 3;
+    }
+
+    .header-chip {
+      position: absolute;
+      top: env(safe-area-inset-top, 10px);
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(0, 0, 0, 0.55);
+      color: #f5f5f5;
+      font-size: 11px;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      pointer-events: auto;
+    }
+
+    .header-chip span {
+      opacity: 0.9;
+    }
+
+    .controls-row {
+      width: 100%;
+      max-width: 480px;
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      pointer-events: auto;
+    }
+
+    .primary-button {
+      flex: 1;
+      max-width: 260px;
+      border: none;
+      border-radius: 999px;
+      padding: 12px 18px;
+      font-size: 14px;
+      font-weight: 600;
+      background: linear-gradient(135deg, #00c896, #00e0b8);
+      color: #0a0a0a;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+    }
+
+    .primary-button:disabled {
+      opacity: 0.7;
+      cursor: default;
+      box-shadow: none;
+    }
+
+    .primary-button-icon {
+      width: 9px;
+      height: 9px;
+      border-radius: 999px;
+      background: #0a0a0a;
+      position: relative;
+    }
+
+    .primary-button-icon::after {
+      content: "";
+      position: absolute;
+      inset: -3px;
+      border-radius: inherit;
+      border: 1px solid rgba(10, 10, 10, 0.55);
+    }
+
+    /* Applicant PiP video (Messenger-style) */
+    .pip-video-container {
+      position: absolute;
+      right: 12px;
+      bottom: 88px;
+      width: 30vw;
+      max-width: 140px;
+      aspect-ratio: 9 / 16;
+      background: #000;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.8);
+      z-index: 4;
+      display: none;
+    }
+
+    .pip-video-container video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      background: #000;
+    }
+
+    .pip-status-bar {
+      position: absolute;
+      top: 6px;
+      left: 6px;
+      padding: 3px 7px;
+      border-radius: 999px;
+      background: rgba(0, 0, 0, 0.6);
+      color: #f5f5f5;
+      font-size: 9px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .pip-dot {
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: #16ff9d;
+      margin-right: 4px;
+    }
+
+    /* Vision agent overlay */
+    .vision-overlay {
+      position: absolute;
+      left: 12px;
+      bottom: 88px;
+      max-width: 55vw;
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: rgba(0, 0, 0, 0.72);
+      color: #f5f5f5;
+      font-size: 11px;
+      line-height: 1.5;
+      box-shadow: 0 18px 45px rgba(0, 0, 0, 0.9);
+      z-index: 4;
+      display: none;
+    }
+
+    .vision-chip {
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      opacity: 0.8;
+      margin-bottom: 4px;
+    }
+
+    .vision-text {
+      font-size: 11px;
+    }
+
+    @media (max-width: 480px) {
+      .pip-video-container {
+        right: 10px;
+        bottom: 88px;
+        width: 32vw;
+      }
+
+      .vision-overlay {
+        left: 10px;
+        bottom: 88px;
+        max-width: 56vw;
+      }
+
+      .primary-button {
+        font-size: 13px;
+        padding: 11px 16px;
+      }
+    }
+
+    @media (orientation: landscape) {
+      .pip-video-container {
+        bottom: 20px;
+      }
+
+      .vision-overlay {
+        bottom: 20px;
+      }
+
+      .controls-row {
+        max-width: 520px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-root">
+    <!-- Fullscreen D-ID avatar target -->
+    <div id="did-container"></div>
+
+    <!-- Applicant PiP video -->
+    <div class="pip-video-container" id="pipContainer">
+      <video id="applicantVideo" autoplay playsinline muted></video>
+      <div class="pip-status-bar">
+        <span class="pip-dot"></span>
+        Applicant
+      </div>
+    </div>
+
+    <!-- On-top UI (header only) -->
+    <div class="ui-layer">
+      <div class="header-chip">
+        <span></span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const pipContainer = document.getElementById("pipContainer");
+    const applicantVideo = document.getElementById("applicantVideo");
+
+    const GEMINI_API_KEY = "AIzaSyAql5az9ms1AEQr_TMslKK9UQXtIZtNxwc";
+    const GEMINI_MODEL_ID = "gemini-flash-latest";
+
+    const VISION_AGENT_SYSTEM_PROMPT = `
+You are a real-time vision agent assisting Beatrice, an HR interviewer avatar at Eburon Resource Agency in Belgium.
+
+Your only job is to look at a single video frame of the applicant and describe, in one short neutral sentence, what you can safely observe about:
+- Their general clothing style and formality (e.g. t-shirt, shirt, hoodie, business suit).
+- Their posture and engagement (e.g. upright, relaxed, leaning forward, looking at camera).
+- The immediate environment (e.g. home office, plain wall, well-lit room).
+
+Strict rules:
+- Stay neutral, professional, and HR-safe.
+- Do not mention or infer race, ethnicity, religion, political views, health, age, attractiveness, or body shape.
+- Do not comment on private objects in the background.
+- If you cannot clearly see a person, or the frame is empty or unusable, respond with exactly:
+NOTHING
+
+Output:
+- One short sentence suitable for Beatrice to speak naturally.
+- If no person is visible or the frame is unclear, output exactly:
+NOTHING
+`;
+
+    async function startApplicantVideo() {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        console.error("Camera access is not supported in this browser.");
+        return;
+      }
+
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: "user" },
+          audio: true
+        });
+
+        applicantVideo.srcObject = stream;
+        pipContainer.style.display = "block";
+
+        applicantVideo.onloadedmetadata = () => {
+          setTimeout(() => {
+            triggerVisionAgent();
+          }, 700);
+        };
+      } catch (error) {
+        console.error("Unable to access camera/microphone. Please check browser permissions.");
+      }
+    }
+
+    function captureFrameAsBase64(video) {
+      const w = video.videoWidth;
+      const h = video.videoHeight;
+      if (!w || !h) return null;
+
+      const canvas = document.createElement("canvas");
+      canvas.width = w;
+      canvas.height = h;
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(video, 0, 0, w, h);
+      const dataUrl = canvas.toDataURL("image/jpeg");
+      const base64 = dataUrl.split(",")[1];
+      return base64;
+    }
+
+    // Maintain conversation history to preserve context
+    let conversationHistory = [];
+
+    async function triggerVisionAgent() {
+      const base64 = captureFrameAsBase64(applicantVideo);
+      if (!base64) {
+        return;
+      }
+
+      const url =
+        "https://generativelanguage.googleapis.com/v1beta/models/" +
+        encodeURIComponent(GEMINI_MODEL_ID) +
+        ":generateContent?key=" +
+        encodeURIComponent(GEMINI_API_KEY);
+
+      // Add new user prompt to conversation history
+      conversationHistory.push({
+        role: "user",
+        parts: [
+          {
+            text: "What do you see?"
+          },
+          {
+            inlineData: {
+              mimeType: "image/jpeg",
+              data: base64
+            }
+          }
+        ]
+      });
+
+      const body = {
+        systemInstruction: {
+          role: "system",
+          parts: [{ text: VISION_AGENT_SYSTEM_PROMPT }]
+        },
+        contents: conversationHistory
+      };
+
+      try {
+        const res = await fetch(url, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(body)
+        });
+
+        if (!res.ok) {
+          // Remove the failed prompt from history
+          conversationHistory.pop();
+          // Retry after 5 seconds even if failed
+          setTimeout(triggerVisionAgent, 5000);
+          return;
+        }
+
+        const json = await res.json();
+        const parts =
+          json.candidates &&
+          json.candidates[0] &&
+          json.candidates[0].content &&
+          json.candidates[0].content.parts
+            ? json.candidates[0].content.parts
+            : [];
+
+        const text = parts
+          .map(p => (p.text ? p.text : ""))
+          .join(" ")
+          .trim();
+
+        if (text && text.toUpperCase() !== "NOTHING") {
+          // Add model response to conversation history
+          conversationHistory.push({
+            role: "model",
+            parts: [{ text: text }]
+          });
+
+          // Store the vision text in localStorage for image.html to read
+          localStorage.setItem("visionText", text);
+          localStorage.setItem("visionTimestamp", Date.now().toString());
+          console.log("Vision analysis:", text);
+        } else {
+          // Remove the prompt from history if response was NOTHING
+          conversationHistory.pop();
+        }
+      } catch (e) {
+        // Remove the failed prompt from history
+        conversationHistory.pop();
+        console.error("Vision agent error", e);
+      } finally {
+        // Schedule next analysis in 5 seconds
+        setTimeout(triggerVisionAgent, 5000);
+      }
+    }
+
+    // Auto-start video on page load
+    window.addEventListener("load", () => {
+      startApplicantVideo();
+    });
+  </script>
+
+  <script
+    type="module"
+    src="https://agent.d-id.com/v2/index.js"
+    data-mode="full"
+    data-client-key="Z29vZ2xlLW9hdXRoMnwxMTY0Nzg2OTY4MDQ3OTI2NzA3MjA6Yzc1MHh2a1VIMGM0bUNuUE0zLUl1"
+    data-agent-id="v2_agt_dvuaz32k"
+    data-name="did-agent"
+    data-monitor="true"
+    data-target-id="did-container">
+  </script>
+</body>
+</html>
