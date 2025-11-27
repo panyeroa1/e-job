@@ -195,7 +195,7 @@ const ApplicantForm: React.FC<ApplicantFormProps> = ({ onSubmit, onBack }) => {
                   type="text"
                   id="location"
                   className="w-full px-4 py-3.5 bg-gray-800/50 border border-gray-700 rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 text-white placeholder-gray-500 outline-none transition-all"
-                  placeholder="e.g. New York, NY"
+                  placeholder="e.g. Brussels, Belgium"
                   value={formData.location}
                   onChange={(e) => setFormData({...formData, location: e.target.value})}
                 />
