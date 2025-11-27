@@ -52,29 +52,36 @@ const ApplicantForm: React.FC<ApplicantFormProps> = ({ onSubmit, onBack }) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (
-        formData.name.trim() && 
-        formData.role.trim() && 
-        formData.email.trim()
-    ) {
-      const applicantId = crypto.randomUUID();
-      const newApplicant: ApplicantData = {
-          id: applicantId,
-          name: formData.name.trim(),
-          email: formData.email.trim(),
-          role: formData.role.trim(),
-          experience: formData.experience.trim(),
-          resumeText: formData.resumeText.trim(),
-          timestamp: Date.now(),
-          extractedResume: extractedData
-      };
-
-      // Save to Supabase
-      await saveApplicant(newApplicant);
-      
-      // Proceed even if save fails (graceful degradation or local state only)
-      onSubmit(newApplicant);
+    
+    // Validate required fields
+    if (!formData.name.trim() || !formData.role.trim() || !formData.email.trim()) {
+      alert('Please fill in all required fields (Name, Email, Role)');
+      return;
     }
+    
+    // Require resume upload
+    if (!fileName) {
+      alert('Please upload your resume before submitting');
+      return;
+    }
+    
+    const applicantId = crypto.randomUUID();
+    const newApplicant: ApplicantData = {
+        id: applicantId,
+        name: formData.name.trim(),
+        email: formData.email.trim(),
+        role: formData.role.trim(),
+        experience: formData.experience.trim(),
+        resumeText: formData.resumeText.trim(),
+        timestamp: Date.now(),
+        extractedResume: extractedData
+    };
+
+    // Save to Supabase
+    await saveApplicant(newApplicant);
+    
+    // Proceed even if save fails (graceful degradation or local state only)
+    onSubmit(newApplicant);
   };
 
   return (
