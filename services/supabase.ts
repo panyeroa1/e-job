@@ -12,6 +12,8 @@ export const supabase = createClient(supabaseUrl || '', supabaseAnonKey || '');
 
 export async function saveApplicant(data: ApplicantData): Promise<string | null> {
   try {
+    console.log('Attempting to save to Supabase:', data);
+    
     const { error } = await supabase
       .from('applicants')
       .insert([
@@ -28,12 +30,16 @@ export async function saveApplicant(data: ApplicantData): Promise<string | null>
       ]);
 
     if (error) {
-      console.error('Error saving applicant:', error);
+      console.error('Supabase save error:', error);
+      alert('Error saving to database: ' + error.message);
       return null;
     }
+    
+    console.log('Successfully saved to Supabase with ID:', data.id);
     return data.id;
   } catch (err) {
     console.error('Unexpected error saving applicant:', err);
+    alert('Unexpected error: ' + err);
     return null;
   }
 }
