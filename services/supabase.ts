@@ -12,16 +12,11 @@ export const supabase = createClient(supabaseUrl || '', supabaseAnonKey || '');
 
 export async function saveApplicant(data: ApplicantData): Promise<string | null> {
   try {
-    // Using a placeholder user_id since we don't have authentication
-    // You should run: ALTER TABLE public.applicants ALTER COLUMN user_id DROP NOT NULL;
-    const PLACEHOLDER_USER_ID = '00000000-0000-0000-0000-000000000000';
-    
     const { error } = await supabase
       .from('applicants')
       .insert([
         {
           id: data.id,
-          user_id: PLACEHOLDER_USER_ID,
           name: data.name,
           email: data.email,
           role: data.role,
