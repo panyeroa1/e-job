@@ -292,6 +292,13 @@ Follow this persona and structure in every interview interaction.`;
 export const getSystemInstruction = (applicant?: ApplicantData) => {
   if (!applicant) return BASE_SYSTEM_PROMPT;
 
+  const resumeContext = applicant.extractedResume ? `
+RESUME DETAILS:
+- Skills: ${applicant.extractedResume.skills?.join(', ') || 'N/A'}
+- Education: ${applicant.extractedResume.education?.join(', ') || 'N/A'}
+- Full Summary: ${applicant.extractedResume.summary || 'N/A'}
+` : '';
+
   return `
 ===========================================================================
 CRITICAL CONTEXT - CURRENT INTERVIEW SESSION
@@ -301,11 +308,12 @@ You are about to interview the following candidate. You must incorporate this in
 CANDIDATE NAME: ${applicant.name}
 TARGET ROLE: ${applicant.role}
 CANDIDATE EXPERIENCE SUMMARY: ${applicant.experience}
+${resumeContext}
 
 INSTRUCTIONS FOR THIS SESSION:
 1. GREETING: Start by welcoming ${applicant.name} by name.
 2. CONTEXT: Explicitly mention that this interview is for the ${applicant.role} position at Eburon.
-3. PERSONALIZATION: Use the experience summary ("${applicant.experience}") to ask a relevant opening question about their background.
+3. PERSONALIZATION: Use the experience summary and resume details to ask relevant questions.
 ===========================================================================
 
 ${BASE_SYSTEM_PROMPT}

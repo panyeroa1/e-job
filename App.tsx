@@ -6,6 +6,7 @@ import LandingPage from './components/LandingPage';
 import AdminLogin from './components/AdminLogin';
 import AdminPortal from './components/AdminPortal';
 import ResumeReview from './components/ResumeReview';
+import ApplicantResume from './components/ApplicantResume';
 import { ApplicantData, AppStep } from './types';
 
 function App() {
@@ -14,7 +15,10 @@ function App() {
 
   const handleFormSubmit = (data: ApplicantData) => {
     setApplicantData(data);
-    setStep('resume-review'); // Go to review page first
+    // Skip ResumeReview, go straight to interview or confirmation
+    // User requested: "do not display that in the front end anymode"
+    // So we go directly to interview, but we keep the data for the /applicant-resume page
+    setStep('interview'); 
   };
 
   const handleResumeConfirmed = () => {
@@ -68,6 +72,15 @@ function App() {
             data={applicantData}
             onConfirm={handleResumeConfirmed}
             onBack={() => setStep('applicant-form')}
+          />
+      );
+  }
+
+  if (step === 'applicant-resume' && applicantData) {
+      return (
+          <ApplicantResume 
+            data={applicantData}
+            onBack={() => setStep('landing')}
           />
       );
   }

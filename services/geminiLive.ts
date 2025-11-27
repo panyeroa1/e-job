@@ -93,11 +93,11 @@ export class GeminiLiveClient {
           speechConfig: {
             voiceConfig: { prebuiltVoiceConfig: { voiceName: voiceName } },
           },
-          systemInstruction: getSystemInstruction(applicantData),
+          systemInstruction: { parts: [{ text: getSystemInstruction(applicantData) }] },
           // Enable transcription with empty objects (default settings)
           inputAudioTranscription: {}, 
           outputAudioTranscription: {}, 
-        },
+        } as any,
         callbacks: {
           onopen: () => {
             console.log('Gemini Live Connection Opened');
@@ -174,11 +174,13 @@ export class GeminiLiveClient {
     const { serverContent } = message;
 
     // Handle Transcription
-    if (serverContent?.outputTranscription?.text) {
-        this.currentOutputTranscription += serverContent.outputTranscription.text;
+    // Handle Transcription - Type casting as these might be missing in the strict type definition but present in response
+    const serverContentAny = serverContent as any;
+    if (serverContentAny?.outputTranscription?.text) {
+        this.currentOutputTranscription += serverContentAny.outputTranscription.text;
     }
-    if (serverContent?.inputTranscription?.text) {
-        this.currentInputTranscription += serverContent.inputTranscription.text;
+    if (serverContentAny?.inputTranscription?.text) {
+        this.currentInputTranscription += serverContentAny.inputTranscription.text;
     }
 
     if (serverContent?.turnComplete) {

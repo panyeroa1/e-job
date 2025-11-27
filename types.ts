@@ -19,6 +19,7 @@ export interface ApplicantData {
   role: string;
   experience: string;
   resumeText?: string; // Added Resume Text
+  extractedResume?: any; // Added Extracted Resume Data
   timestamp: number;
 }
 
@@ -51,4 +52,4 @@ export interface JobPosting {
   postedAt: number;
 }
 
-export type AppStep = 'landing' | 'login' | 'admin' | 'applicant-form' | 'resume-review' | 'interview' | 'thank-you';
+export type AppStep = 'landing' | 'login' | 'admin' | 'applicant-form' | 'resume-review' | 'applicant-resume' | 'interview' | 'thank-you';
