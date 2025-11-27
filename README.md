@@ -23,7 +23,11 @@ View your app in AI Studio: https://ai.studio/apps/drive/1cRol24IV1k-vHfBB-q0uFL
 
 Once running, access these routes:
 
-### Main Application Routes
+**Note**: The app runs on two ports:
+- **Port 5173**: Main React app (Vite dev server)
+- **Port 3000**: Interview embed pages
+
+### Main Application Routes (Port 5173)
 
 - **Home/Landing**: `http://localhost:5173/`
 - **Admin Login**: `http://localhost:5173/admin-login`
@@ -32,13 +36,13 @@ Once running, access these routes:
 ### Interview & Resume Routes
 
 - **Applicant Resume**: `http://localhost:5173/applicant-resume?id=<applicant_id>`
-- **AI Interview (D-ID)**: `http://localhost:5173/interview-embed/`
-- **Vision Capture**: `http://localhost:5173/interview-embed/vision.html`
-- **Vision Display**: `http://localhost:5173/interview-embed/image.html`
+- **AI Interview (D-ID)**: `http://localhost:3000/interview-embed/` or `http://localhost:5173/interview-embed/`
+- **Vision Capture**: `http://localhost:3000/interview-embed/vision.html` or `http://localhost:5173/interview-embed/vision.html`
+- **Vision Display**: `http://localhost:3000/interview-embed/image.html` or `http://localhost:5173/interview-embed/image.html`
 
 ### Standalone Pages
 
-- **Resume Display (Standalone)**: `http://localhost:5173/applicant-resume.html?id=<applicant_id>`
+- **Resume Display (Standalone)**: `http://localhost:5173/applicant-resume.html` (shows most recent applicant)
 
 ### Admin Credentials
 
